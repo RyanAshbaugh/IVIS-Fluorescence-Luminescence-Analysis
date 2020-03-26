@@ -1,5 +1,5 @@
 function saveResults( well_counts, exp_folder, fig_handle )
-%saveResults save results from analyzing tiff files from IVIS experiments
+%	saveResults save results from analyzing tiff files from IVIS experiments
 %   Arguments:
 %       well_counts - num_wells x num_images, total number of photon counts
 %           within each well for each image
