@@ -7,6 +7,9 @@ function well_counts = wellCountAnalysis( ...
 %			light image
 %		final_well_centers - num_wells x 2, x y location of sorted wells
 % 		final_well_radii - num_wells x 1, radii length in pixels
+%	Returns:
+%		well_counts - num_wells x num_measurements, detected amount of light in
+%			lumi images for each well at each reading/measurement/image
 
     num_wells = size( final_well_centers, 1 );
     num_reads = size( lumis_cell, 1 ); 

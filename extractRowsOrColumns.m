@@ -5,7 +5,7 @@ function [ well_centers_cell, well_radii_cell ] = extractRowsOrColumns( ...
 %   Arguments:
 %		well_centers - num_wells x 2, all circle centers in x y points 
 %		well_radii - num_wells x 1, all circle radii in pixels 
-%       sort_direction - 1 = sort x values (rows), 2 = sort on y values (cols)
+%       sort_direction - 1 = sort x values (cols), 2 = sort on y values (rows)
 %	Returns:
 %		well_centers_cell - cell containing entries where each entry is a group
 % 			of row/column centers ( num_rows/columns x ( num_columns/row x 2 ))
