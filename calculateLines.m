@@ -9,9 +9,9 @@ function [ row_lines, col_lines ] = calculateLines( ...
 % 			having the x,y points of the centers sorted by columns
 %	Returns:
 % 		row_lines - num_rows x 2, with coefficients for y = m * x + b, ie
-%			[ b1 a1; b2 a2; ... b_num_rows a_num_rows ]
+%			[ b1 m1; b2 m2; ... b_num_rows m_num_rows ]
 % 		col_lines - num_cols x 2, with coefficients for y = m * x + b, ie
-%			[ b1 a1; b2 a2; ... b_num_cols a_num_cols ]
+%			[ b1 m1; b2 m2; ... b_num_cols m_num_cols ]
 
     num_rows = size( well_rows_cell, 1 );
     num_cols = size( well_columns_cell, 1 ); 

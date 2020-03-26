@@ -1,10 +1,14 @@
 function displayLines( row_lines, col_lines, photo_width )
-%displayLines Summary of this function goes here
-%   Detailed explanation goes here
+%displayLines plot lines of best fit for each row and column
+%	Arguments:
+%		row_lines - num_rows x 2, [ b1 m1; b2 m2; ... ] for y = m * x + b
+%		col_lines - num_cols x 2, [ b1 m1; b2 m2; ... ] for y = m * x + b
+%		photo_width - width of photo
 
     num_rows = size( row_lines, 1 );
     num_cols = size( col_lines, 1 );
 
+	% plot lines
     hold on;
     row_Xs = repmat( [ 1 photo_width ]', 1, num_rows );
     row_Ys = [ row_lines * [ 1 1 ]', row_lines * [ 1 photo_width ]' ]';
