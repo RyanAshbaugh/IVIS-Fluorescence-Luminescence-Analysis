@@ -47,7 +47,7 @@ photo_histeq = histeq( photo_thresh );
 % find wells
 [ well_centers, well_radii ] = imfindcircles( photo_thresh, ...
     approximate_well_radii_range, 'Method', 'TwoStage', ...
-    'ObjectPolarity', 'bright' );
+    'ObjectPolarity', 'bright', 'Sensitivity', 0.86 );
 num_wells = length( well_radii );
 
 % make cell of wells grouped by column ( sort_direction = 1-columns, 
