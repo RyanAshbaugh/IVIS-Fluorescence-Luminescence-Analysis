@@ -1,61 +1,45 @@
-function [ final_well_centers, final_well_radii, well_cell_array ] = ...
+function [ final_well_centers, final_well_radii ] = ...
     sortWells( well_centers, well_radii, well_rows_cell, well_rows_radii )
+% 	sortWells - once the the centers and radii have been grouped by rows, we 
+% 		want we want to get a matrix with wells sorted top-bottom, left-right, 
+% 		so that row 1 is the first well, and row num_wells is the last well. 
+%		This makes analysing output much easier, since before, even though 
+%		wells were grouped, they could be in any order which is confusing.
+%	Arguments:
+%		well_centers - num_wells x 2, all of the well centers in x and y
+%		well_radii - num_wells x 1, all of the well radii in pixels
+%		well_rows_cell - num_rows x 1, cell array, where each entry is an array
+%			num_cols x 2 having the centers sorted by well
+%		well_rows_radii - same as well_rows_cell but for the radii
+%	Returns:
+%		final_well_centers - num_wells x 2, centers of wells reorganized so
+% 			well 1 is in row 1, 2 in row 2, etc, top-bottom left right
+%		final_well_radii - same as final_well_centers, but for radii
+%		well_cell_array - cell array with num_rows entries, all sorted as above
 
-%     num_wells = length( well_radii );
-%     
-%     % sort circles by y value (row)
-%     [ centers_sorted_y, centers_sort_row_index ] = sort( well_centers(:,2) );
-%     max_radius = max( well_radii );
-% 
-%     % look for row transitions using difference between adjacent well centers
-%     row_starts = ...
-%         find( [ 1; diff( centers_sorted_y ) > max_radius ] > 0 );
-%     row_ends = ...
-%         find( [ diff(centers_sorted_y) > max_radius; num_wells ] > 0 );
-%     num_rows = length( row_starts );
-% 
-%     % populate the final well centers and radii matrices
-%     final_well_centers = zeros( size( well_centers ) );
-%     final_well_radii = zeros( size( well_radii ) );
-%     well_cell_array = cell( 1 );
-%     for yy = 1:num_rows
-%         % get a single row of circles
-%         row_wells = well_centers( ...
-%             centers_sort_row_index( row_starts(yy):row_ends(yy) ),: );
-%         row_radii = well_radii( ...
-%             centers_sort_row_index( row_starts(yy):row_ends(yy) ) );
-% 
-%         % sort these on their x value (column)
-%         [ row_wells_x_sorted, row_wells_x_sorted_index ] = ...
-%             sort( row_wells( :, 1 ) );
-% 
-%         % then fill the final matrices with the proper sorted circles
-%         final_well_centers( row_starts(yy):row_ends(yy), : ) = ...
-%             row_wells( row_wells_x_sorted_index, : );
-%         final_well_radii( row_starts(yy):row_ends(yy), : ) = ...
-%             row_radii( row_wells_x_sorted_index );
-%         
-%         % cell array for tracking which wells in which row
-%         well_cell_array{ yy, 1 } = ...
-%             row_wells( row_wells_x_sorted_index, : );
-% 
-%     end
-    
     num_rows = size( well_rows_cell, 1 );
+
+	% initialize final matrices
     final_well_centers = zeros( size( well_centers ) );
     final_well_radii = zeros( size( well_radii ) );
 
+	% for all rows
     start_index = 1;
     for row = 1:num_rows
+
+		% find where this row ends to map it to final matrix
         end_index = start_index + size( well_rows_cell{ row, 1 }, 1 ) - 1;
+
+		% now assign that whole slice index to that row's entry
         final_well_centers( ...
             start_index : end_index, : ) = ...
             well_rows_cell{ row, 1 };
         final_well_radii( ...
             start_index : end_index ) = ...
             well_rows_radii{ row, 1 };
+
+		% move to next starting index for final matrices
         start_index = start_index + size( well_rows_cell{ row, 1 }, 1 );
     end
 
-    well_cell_array = well_rows_cell;
 end
