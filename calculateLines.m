@@ -1,7 +1,17 @@
 function [ row_lines, col_lines ] = calculateLines( ...
     well_rows_cell, well_columns_cell )
-%calculateLines Summary of this function goes here
-%   Detailed explanation goes here
+%	calculateLines - find the 'lines of best fit' for each row and column so
+%		that they go through the center points of the wells located there
+%	Arguments:
+%		well_rows_cell - num_rows x 1 cell array, with entries num_cols x 2
+%			having the x,y points of the centers, sorted by rows
+%		well_columns_cell - num_cols x 1 cell array, with entries num_rows x 2
+% 			having the x,y points of the centers sorted by columns
+%	Returns:
+% 		row_lines - num_rows x 2, with coefficients for y = m * x + b, ie
+%			[ b1 a1; b2 a2; ... b_num_rows a_num_rows ]
+% 		col_lines - num_cols x 2, with coefficients for y = m * x + b, ie
+%			[ b1 a1; b2 a2; ... b_num_cols a_num_cols ]
 
     num_rows = size( well_rows_cell, 1 );
     num_cols = size( well_columns_cell, 1 ); 
