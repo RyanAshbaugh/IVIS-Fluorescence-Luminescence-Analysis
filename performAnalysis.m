@@ -25,6 +25,11 @@ function [ well_counts, image_handle ] = ...
 	[ photos_cell, lumis_cell ] = loadExperimentTiffs( photo_struct, ...
 		lumi_struct, num_reads );
 
+%     % display original image
+%     figure;
+%     imshow( ...
+%         imresize(photos_cell{ 1 }, image_scale * size( photos_cell{ 1 } ) ) );
+    
 	photo_height = size( photos_cell{ 1 }, 1 );
 	photo_width = size( photos_cell{ 1 }, 2 );
 
@@ -42,12 +47,37 @@ function [ well_counts, image_handle ] = ...
 	% perform histogram equalization
 	photo_histeq = histeq( photo_thresh );
 
+%     % display histeq image
+%     figure;
+%     imshow( ...
+%         imresize(photo_histeq, image_scale * size( photo_histeq ) ) );
+    
 	% find wells
 	[ well_centers, well_radii ] = imfindcircles( photo_thresh, ...
 		approximate_well_radii_range, 'Method', 'TwoStage', ...
 		'ObjectPolarity', 'bright', 'Sensitivity', sensitivity );
 	num_wells = length( well_radii );
 
+%     % display detected circles image
+%     figure;
+%     imshow( ...
+%         imresize(photo_histeq, image_scale * size( photo_histeq ) ) );
+%     hold on;
+%     viscircles( well_centers * image_scale, ...
+%         well_radii * image_scale, 'LineWidth', 1 );
+%      % make black dot and put text in it for readability
+%     plot( image_scale * well_centers(:,1), ...
+%         image_scale * well_centers(:,2), ...
+%         'o', 'Color', 'k', 'MarkerFaceColor', 'k',...
+%         'MarkerSize', 10 );
+%     for well = 1:num_wells
+%         xx = image_scale * well_centers( well, 1 );
+%         yy = image_scale * well_centers( well, 2 ); 
+%         text( xx, yy, num2str( well ), 'Color', 'r', 'FontSize', 8, ...
+%             'HorizontalAlignment', 'center' );    
+%     end
+%     hold off;
+    
 	% make cell of wells grouped by column ( sort_direction = 1-columns, 
 	%   2-rows )
 	[ well_rows_cell, well_rows_radii ] = ...
@@ -57,6 +87,26 @@ function [ well_counts, image_handle ] = ...
 	% sort the wells top to bottom, left to right
 	[ final_well_centers, final_well_radii ] = ...
 		sortWells( well_centers, well_radii, well_rows_cell, well_rows_radii );
+    
+%     % diplay sorted detected wells
+%     figure;
+%     imshow( ...
+%         imresize(photo_histeq, image_scale * size( photo_histeq ) ) );
+%     hold on;
+%     viscircles( final_well_centers * image_scale, ...
+%         well_radii * image_scale, 'LineWidth', 1 );
+%     % make black dot and put text in it for readability
+%     plot( image_scale * final_well_centers(:,1), ...
+%         image_scale * final_well_centers(:,2), ...
+%         'o', 'Color', 'k', 'MarkerFaceColor', 'k',...
+%         'MarkerSize', 10 );
+%     for well = 1:num_wells
+%         xx = image_scale * final_well_centers( well, 1 );
+%         yy = image_scale * final_well_centers( well, 2 ); 
+%         text( xx, yy, num2str( well ), 'Color', 'r', 'FontSize', 8, ...
+%             'HorizontalAlignment', 'center' );    
+%     end
+%     hold off;
 
 	% get lines for all of the rows and columns
 	num_rows = size( well_rows_cell, 1 );
@@ -66,8 +116,8 @@ function [ well_counts, image_handle ] = ...
 	[ row_lines, col_lines ] = ...
 		calculateLines( well_rows_cell, well_columns_cell );
 
-	% displayCenters( final_well_centers, photo_width, photo_height );
-	% displayLines( row_lines, col_lines, photo_width );
+	displayCenters( final_well_centers, photo_width, photo_height );
+	displayLines( row_lines, col_lines, photo_width );
 
 	% go through all the intersecions and see if any points are missing
 	for ii = 1:num_rows
@@ -89,7 +139,10 @@ function [ well_counts, image_handle ] = ...
 			end
 			
 		end
-	end
+    end
+    
+%     displayCenters( well_centers, photo_width, photo_height );
+% 	displayLines( row_lines, col_lines, photo_width );
 
 	% resort wells after adding any missed wells
 	[ well_rows_cell, well_rows_radii ] = ...
