@@ -68,8 +68,8 @@ num_cols = size( well_columns_cell, 1 );
 [ row_lines, col_lines ] = ...
     calculateLines( well_rows_cell, well_columns_cell );
 
-displayCenters( final_well_centers, photo_width, photo_height );
-displayLines( row_lines, col_lines, photo_width );
+% displayCenters( final_well_centers, photo_width, photo_height );
+% displayLines( row_lines, col_lines, photo_width );
 
 % go through all the intersecions and see if any points are missing
 for ii = 1:num_rows
@@ -100,7 +100,7 @@ end
     sortWells( well_centers, well_radii, well_rows_cell, well_rows_radii );
 
 image_handle = displayAnalysisPhoto( photo_histeq, image_scale, ...
-    final_well_centers, final_well_radii );
+    final_well_centers, final_well_radii, 'off' );
 
 well_counts = wellCountAnalysis( lumis_cell, final_well_centers, ...
     final_well_radii );
