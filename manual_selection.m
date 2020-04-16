@@ -14,6 +14,9 @@ top_folder = uigetdir('Select main experiment folder');
 approximate_well_radii_range = [ 10 20 ];
 image_scale = 4;				% enlarge image for better view when saving
 
+num_x_wells = 12;
+num_y_wells = 8;
+
 tic;    % start timer
 
 % put all files in the folder into a list, for the photos and luminescence
@@ -48,14 +51,24 @@ photo_histeq = histeq( photo_thresh );
 imshow( photo_histeq );
 
 
+%{
 % pick points
 disp('Select four corner wells');
 empty_point = images.roi.Point;
-corners = [ empty_point empty_point empty_point empty_point ];
+temp_corners = [ empty_point empty_point empty_point empty_point ];
+corners_array = zeros( 4, 2 );
+
 for ii = 1:4
 
-	corners( ii ) = drawpoint( 'Color', 'r', 'LineWidth', 1 );
+	temp_corners( ii ) = drawpoint( 'Color', 'r', 'LineWidth', 1 );
+	corners_array( ii, : ) = temp_corners( ii ).Position;
 
 end
+%}
 
+[ corners_array, temp_corners ] = selectCorners();
+
+final_corner_positions = sortSelectedCorners( corners_array );
+
+all_wells = generateAllWells( final_corner_positions, num_x_wells, num_y_wells );
 
