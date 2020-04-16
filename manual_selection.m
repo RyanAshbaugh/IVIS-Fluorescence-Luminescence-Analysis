@@ -66,9 +66,15 @@ for ii = 1:4
 end
 %}
 
-[ corners_array, temp_corners ] = selectCorners();
 
+all_radii = ones( num_x_wells * num_y_wells, 1 ) * 7;
+
+[ corners_array, temp_corners ] = selectCorners();
 final_corner_positions = sortSelectedCorners( corners_array );
 
-all_wells = generateAllWells( final_corner_positions, num_x_wells, num_y_wells );
+all_wells_tensor = generateAllWells( final_corner_positions, num_x_wells, num_y_wells );
+all_centers_mat = reshape( all_wells_tensor, num_x_wells * num_y_wells, 2, 1 );
+
+h = displayAnalysisPhoto( photo_histeq, image_scale, all_centers_mat, all_radii, 'on' );
+
 
