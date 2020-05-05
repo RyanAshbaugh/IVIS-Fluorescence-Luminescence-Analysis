@@ -23,7 +23,7 @@ function all_wells = generateAllWells( corner_positions, num_x_wells, num_y_well
 	first_row_y = corner_positions( 1, 1, 2 ):intra_row_dy:corner_positions(1, 2, 2);
 	first_row = reshape( [ first_row_x'; first_row_y' ], 1, num_x_wells, 2 );
 
-	% create all of the well locations by using teh inter row offsets
+	% create all of the well locations by using the inter row offsets
 	all_wells( :, :, 1 ) = first_row_x + ndgrid( 0:7, 0:11 ) * inter_row_dx;
 	all_wells( :, :, 2 ) = first_row_y + ndgrid( 0:7, 0:11 ) * inter_row_dy;
 
