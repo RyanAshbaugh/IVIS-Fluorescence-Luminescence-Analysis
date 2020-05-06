@@ -31,8 +31,6 @@ function [ groups, msg ] = parseGroupData( indices, ...
 						[ groups{ group_id }{ 2 }, well_range ]; 
 				end
 			end
-			groups{group_id}
-			groups{group_id}{2}
 		end
 		msg = 'Groups updated successfully';
 	catch ME
