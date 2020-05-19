@@ -14,27 +14,29 @@ To analyze a sequence of images, begin by pressing the browse button next to the
 
 For example, if you would like to analyze the sequence of three images named 'Example_Images_SEQ', you would select the top folder 'Example_Images_SEQ' and whose contents are depicted below:
 
+```
 Example_Images_SEQ
-+-- Example_Images_001
-|	+--AnalyzedClickInfo.txt
-|	+--ClickInfo.txt
-|	+--luminescent.TIF
-|	+--photogragh.TIF
-|	+--readbiasonly.TIF
-+-- Example_Images_001
-|	+--AnalyzedClickInfo.txt
-|	+--ClickInfo.txt
-|	+--luminescent.TIF
-|	+--photogragh.TIF
-|	+--readbiasonly.TIF
-+-- Example_Images_001
-|	+--AnalyzedClickInfo.txt
-|	+--ClickInfo.txt
-|	+--luminescent.TIF
-|	+--photogragh.TIF
-|	+--readbiasonly.TIF
-+-- Example_Images_SEQ.PNG
-+-- SequenceInfo.txt
+|--- Example_Images_001
+|	 |--- AnalyzedClickInfo.txt
+|	 |--- ClickInfo.txt
+|	 |--- luminescent.TIF
+|	 |--- photogragh.TIF
+|	 |--- readbiasonly.TIF
+|--- Example_Images_001
+|	 |--- AnalyzedClickInfo.txt
+|	 |--- ClickInfo.txt
+|	 |--- luminescent.TIF
+|	 |--- photogragh.TIF
+|	 |--- readbiasonly.TIF
+|--- Example_Images_001
+|	 |--- AnalyzedClickInfo.txt
+|	 |--- ClickInfo.txt
+|	 |--- luminescent.TIF
+|	 |--- photogragh.TIF
+|	 |--- readbiasonly.TIF
+|--- Example_Images_SEQ.PNG
+|--- SequenceInfo.txt
+```
 
 Once an sequence folder has been selected, the first image in the sequence will be displayed on the right side of the window under the 'Plate Image' tab.
 
