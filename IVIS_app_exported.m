@@ -19,9 +19,12 @@ classdef IVIS_app_exported < matlab.apps.AppBase
         SaveWellCountDataButton        matlab.ui.control.Button
         AddgroupButton                 matlab.ui.control.Button
         CleargroupsButton              matlab.ui.control.Button
-        CountsvstimeplotwellsButtonGroup  matlab.ui.container.ButtonGroup
-        AllwellsButton_2               matlab.ui.control.RadioButton
-        GroupedwellsButton             matlab.ui.control.RadioButton
+        WellcountsvstimeplotButtonGroup  matlab.ui.container.ButtonGroup
+        WellsbygroupButton             matlab.ui.control.RadioButton
+        AverageofeachgroupButton       matlab.ui.control.RadioButton
+        ROITypeDropDownLabel           matlab.ui.control.Label
+        ROITypeDropDown                matlab.ui.control.DropDown
+        DeletegroupButton              matlab.ui.control.Button
         RightPanel                     matlab.ui.container.Panel
         TabGroup                       matlab.ui.container.TabGroup
         PlateImageTab                  matlab.ui.container.Tab
@@ -32,16 +35,8 @@ classdef IVIS_app_exported < matlab.apps.AppBase
         UIAxes3                        matlab.ui.control.UIAxes
         CountsvsTimeTab                matlab.ui.container.Tab
         UIAxes4                        matlab.ui.control.UIAxes
-        WellCountsTab                  matlab.ui.container.Tab
-        TabGroup2                      matlab.ui.container.TabGroup
-        AllWellsTab                    matlab.ui.container.Tab
-        UITable2                       matlab.ui.control.Table
-        Group1Tab                      matlab.ui.container.Tab
-        UITable3                       matlab.ui.control.Table
-        Tab                            matlab.ui.container.Tab
-        Tab2                           matlab.ui.container.Tab
-        StatusTextAreaLabel            matlab.ui.control.Label
-        StatusTextArea                 matlab.ui.control.TextArea
+        StatusWindowTextAreaLabel      matlab.ui.control.Label
+        StatusWindowTextArea           matlab.ui.control.TextArea
     end
 
     % Properties that correspond to apps with auto-reflow
@@ -75,6 +70,7 @@ classdef IVIS_app_exported < matlab.apps.AppBase
         all_well_centers = []   % matrix to store the x, y positions of the well centers
         groups                  cell
         group_handle_cell       cell % store handles for markers {1}, and text {2}
+        mean_flag               logical % whether or not to plot the mean of all group curves
     end
     
 
@@ -85,7 +81,7 @@ classdef IVIS_app_exported < matlab.apps.AppBase
         function BrowseButtonPushed(app, event)
             app.experiment_directory = uigetdir('Select Main Experiment Folder');
             app.IvisExperimentFolderEditField.Value = app.experiment_directory;
-            app.StatusTextArea.Value = [ 'Selected folder: ' app.experiment_directory ];
+            app.StatusWindowTextArea.Value = [ 'Selected folder: ' app.experiment_directory ];
             
             % refocus window
             drawnow;
@@ -119,7 +115,7 @@ classdef IVIS_app_exported < matlab.apps.AppBase
             app.all_well_radii = ones( app.num_rows * app.num_cols, 1 ) * app.default_radii;
             
             if app.ManualButton.Value
-                app.StatusTextArea.Value = 'Manual';
+                app.StatusWindowTextArea.Value = 'Manual';
                 
                 corner_fig = figure('Name', 'Select the four corner wells');
                 imshow( app.display_photo );
@@ -127,7 +123,7 @@ classdef IVIS_app_exported < matlab.apps.AppBase
                 close( corner_fig );
                 
             elseif app.AutomaticButton.Value
-                app.StatusTextArea.Value = 'Automatic';
+                app.StatusWindowTextArea.Value = 'Automatic';
                 
                 [ app.all_well_centers, ~ ] = ...
                     automaticDetection( app.photo_cell, app.approximate_well_radii_range, app.sensitivity );
@@ -144,20 +140,21 @@ classdef IVIS_app_exported < matlab.apps.AppBase
 
         % Button pushed function: AnalyzeWellsButton
         function AnalyzeWellsButtonPushed(app, event)
-            app.StatusTextArea.Value = [ app.StatusTextArea.Value; newline 'Analyzing wells...' ];
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline 'Analyzing wells...' ];
             app.well_counts = wellCountAnalysis( app.reporter_cell, app.all_well_centers, app.all_well_radii );
-            app.StatusTextArea.Value = [ app.StatusTextArea.Value; newline 'Done analyzing wells.' ];
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline 'Done analyzing wells.' ];
             
-            size( app.well_counts )
-            well_count_table = array2table( app.well_counts );
-            app.UITable2.Data = well_count_table;
+            %ize( app.well_counts )
+            %well_count_table = array2table( app.well_counts );
+            %app.UITable2.Data = well_count_table;
 
             app.normalized_well_counts = app.well_counts ./ ...
                 repmat( app.well_counts(:,1), 1, size( app.well_counts, 2 ));
             
-            msg = plotCountsOverTime( app.UIAxes4, app.well_counts, app.normalized_well_counts, app.groups );
+            app.WellcountsvstimeplotButtonGroup.SelectedObject
+            msg = plotCountsOverTime( app.UIAxes4, app.normalized_well_counts, app.groups );
             app.TabGroup.SelectedTab = app.CountsvsTimeTab;
-            app.StatusTextArea.Value = [ app.StatusTextArea.Value; newline msg ];
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline msg ];
             
         end
 
@@ -166,11 +163,11 @@ classdef IVIS_app_exported < matlab.apps.AppBase
             indices = event.Indices;
             newData = event.NewData;
             [ app.groups, msg ] = parseGroupData( indices, newData, app.groups );
-            app.StatusTextArea.Value = [ app.StatusTextArea.Value; newline msg ];
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline msg ];
             
             [ app.group_handle_cell, msg ] = displayGroupPhoto( app.UIAxes3, app.all_well_centers, ...
                 app.all_well_radii, app.groups, app.image_scale, app.group_handle_cell );
-            app.StatusTextArea.Value = [ app.StatusTextArea.Value; newline msg ];
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline msg ];
             
             app.TabGroup.SelectedTab = app.GroupImageTab;
         end
@@ -191,7 +188,7 @@ classdef IVIS_app_exported < matlab.apps.AppBase
             else
                 msg = [ 'Canceled or invalid filename or path entered' ];
             end
-            app.StatusTextArea.Value = [ app.StatusTextArea.Value; newline msg ];
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline msg ];
         end
 
         % Button pushed function: AddgroupButton
@@ -219,10 +216,37 @@ classdef IVIS_app_exported < matlab.apps.AppBase
         end
 
         % Selection changed function: 
-        % CountsvstimeplotwellsButtonGroup
-        function CountsvstimeplotwellsButtonGroupSelectionChanged(app, event)
-            selectedButton = app.CountsvstimeplotwellsButtonGroup.SelectedObject
-            
+        % WellcountsvstimeplotButtonGroup
+        function WellcountsvstimeplotButtonGroupSelectionChanged(app, event)
+            selectedButton = app.WellcountsvstimeplotButtonGroup.SelectedObject;
+
+            size( app.normalized_well_counts )
+            app.groups
+            if app.WellsbygroupButton.Value
+                app.mean_flag = false;
+            elseif app.AverageofeachgroupButton.Value
+                app.mean_flag = true;
+            end
+            msg = plotCountsOverTime( app.UIAxes4, app.normalized_well_counts, app.groups, app.mean_flag );
+            app.TabGroup.SelectedTab = app.CountsvsTimeTab;
+        end
+
+        % Button pushed function: DeletegroupButton
+        function DeletegroupButtonPushed(app, event)
+            group_to_delete_cell = inputdlg( 'Enter the row number of the group to delete: ' );
+            group_to_delete_num = str2num( group_to_delete_cell{1} );
+            if isempty( group_to_delete_num )
+                msg = [ 'Invalid entry, input must be a number. No groups deleted.'];
+            elseif ( group_to_delete_num < 0 ) | ( group_to_delete_num > size( app.groups, 2 ))
+                msg = [ 'Invalid entry, input is outside the range valid row numbers. No groups deleted.' ];
+            elseif isnumeric( group_to_delete_num )
+                app.UITable.Data = [ app.UITable.Data(1:(group_to_delete_num-1),:); ...
+                    app.UITable.Data((group_to_delete_num + 1):end,:) ];
+                app.groups{ group_to_delete_num } = [];
+                app.groups = app.groups(~cellfun('isempty', app.groups));
+                msg = [ 'Group ' num2str( group_to_delete_num) ' deleted.'];
+            end
+            app.StatusWindowTextArea.Value = [ app.StatusWindowTextArea.Value; newline msg ];
         end
 
         % Changes arrangement of the app based on UIFigure width
@@ -291,18 +315,18 @@ classdef IVIS_app_exported < matlab.apps.AppBase
             % Create PlaceROIsButton
             app.PlaceROIsButton = uibutton(app.LeftPanel, 'push');
             app.PlaceROIsButton.ButtonPushedFcn = createCallbackFcn(app, @PlaceROIsButtonPushed, true);
-            app.PlaceROIsButton.Position = [62 312 100 22];
+            app.PlaceROIsButton.Position = [26 327 100 22];
             app.PlaceROIsButton.Text = 'Place ROIs';
 
             % Create ROIDetectionLabel
             app.ROIDetectionLabel = uilabel(app.LeftPanel);
-            app.ROIDetectionLabel.Position = [66 424 81 22];
+            app.ROIDetectionLabel.Position = [30 429 118 32];
             app.ROIDetectionLabel.Text = 'ROI Detection';
 
             % Create DetectionMethodButtonGroup
             app.DetectionMethodButtonGroup = uibuttongroup(app.LeftPanel);
             app.DetectionMethodButtonGroup.Title = 'Detection Method';
-            app.DetectionMethodButtonGroup.Position = [62 344 124 71];
+            app.DetectionMethodButtonGroup.Position = [26 359 124 71];
 
             % Create ManualButton
             app.ManualButton = uiradiobutton(app.DetectionMethodButtonGroup);
@@ -343,31 +367,49 @@ classdef IVIS_app_exported < matlab.apps.AppBase
             % Create AddgroupButton
             app.AddgroupButton = uibutton(app.LeftPanel, 'push');
             app.AddgroupButton.ButtonPushedFcn = createCallbackFcn(app, @AddgroupButtonPushed, true);
-            app.AddgroupButton.Position = [50 147 100 22];
+            app.AddgroupButton.Position = [26 146 100 22];
             app.AddgroupButton.Text = 'Add group';
 
             % Create CleargroupsButton
             app.CleargroupsButton = uibutton(app.LeftPanel, 'push');
             app.CleargroupsButton.ButtonPushedFcn = createCallbackFcn(app, @CleargroupsButtonPushed, true);
-            app.CleargroupsButton.Position = [183 146 100 22];
+            app.CleargroupsButton.Position = [244 147 100 22];
             app.CleargroupsButton.Text = 'Clear groups';
 
-            % Create CountsvstimeplotwellsButtonGroup
-            app.CountsvstimeplotwellsButtonGroup = uibuttongroup(app.LeftPanel);
-            app.CountsvstimeplotwellsButtonGroup.SelectionChangedFcn = createCallbackFcn(app, @CountsvstimeplotwellsButtonGroupSelectionChanged, true);
-            app.CountsvstimeplotwellsButtonGroup.Title = 'Counts vs time plot wells';
-            app.CountsvstimeplotwellsButtonGroup.Position = [26 14 145 65];
+            % Create WellcountsvstimeplotButtonGroup
+            app.WellcountsvstimeplotButtonGroup = uibuttongroup(app.LeftPanel);
+            app.WellcountsvstimeplotButtonGroup.SelectionChangedFcn = createCallbackFcn(app, @WellcountsvstimeplotButtonGroupSelectionChanged, true);
+            app.WellcountsvstimeplotButtonGroup.Title = 'Well counts vs time plot';
+            app.WellcountsvstimeplotButtonGroup.Position = [26 6 158 73];
 
-            % Create AllwellsButton_2
-            app.AllwellsButton_2 = uiradiobutton(app.CountsvstimeplotwellsButtonGroup);
-            app.AllwellsButton_2.Text = 'All wells';
-            app.AllwellsButton_2.Position = [11 19 65 22];
-            app.AllwellsButton_2.Value = true;
+            % Create WellsbygroupButton
+            app.WellsbygroupButton = uiradiobutton(app.WellcountsvstimeplotButtonGroup);
+            app.WellsbygroupButton.Text = 'Wells by group';
+            app.WellsbygroupButton.Position = [11 27 101 22];
+            app.WellsbygroupButton.Value = true;
 
-            % Create GroupedwellsButton
-            app.GroupedwellsButton = uiradiobutton(app.CountsvstimeplotwellsButtonGroup);
-            app.GroupedwellsButton.Text = 'Grouped wells';
-            app.GroupedwellsButton.Position = [11 -3 99 22];
+            % Create AverageofeachgroupButton
+            app.AverageofeachgroupButton = uiradiobutton(app.WellcountsvstimeplotButtonGroup);
+            app.AverageofeachgroupButton.Text = 'Average of each group';
+            app.AverageofeachgroupButton.Position = [11 5 143 22];
+
+            % Create ROITypeDropDownLabel
+            app.ROITypeDropDownLabel = uilabel(app.LeftPanel);
+            app.ROITypeDropDownLabel.HorizontalAlignment = 'right';
+            app.ROITypeDropDownLabel.Position = [26 473 56 22];
+            app.ROITypeDropDownLabel.Text = 'ROI Type';
+
+            % Create ROITypeDropDown
+            app.ROITypeDropDown = uidropdown(app.LeftPanel);
+            app.ROITypeDropDown.Items = {'96 Well Plate', 'Single Circle'};
+            app.ROITypeDropDown.Position = [97 473 148 22];
+            app.ROITypeDropDown.Value = '96 Well Plate';
+
+            % Create DeletegroupButton
+            app.DeletegroupButton = uibutton(app.LeftPanel, 'push');
+            app.DeletegroupButton.ButtonPushedFcn = createCallbackFcn(app, @DeletegroupButtonPushed, true);
+            app.DeletegroupButton.Position = [135 147 100 22];
+            app.DeletegroupButton.Text = 'Delete group';
 
             % Create RightPanel
             app.RightPanel = uipanel(app.GridLayout);
@@ -435,51 +477,15 @@ classdef IVIS_app_exported < matlab.apps.AppBase
             app.UIAxes4.PlotBoxAspectRatio = [1.1280724450194 1 1];
             app.UIAxes4.Position = [20 17 397 365];
 
-            % Create WellCountsTab
-            app.WellCountsTab = uitab(app.TabGroup);
-            app.WellCountsTab.Title = 'Well Counts';
+            % Create StatusWindowTextAreaLabel
+            app.StatusWindowTextAreaLabel = uilabel(app.RightPanel);
+            app.StatusWindowTextAreaLabel.HorizontalAlignment = 'right';
+            app.StatusWindowTextAreaLabel.Position = [7 126 85 22];
+            app.StatusWindowTextAreaLabel.Text = 'Status Window';
 
-            % Create TabGroup2
-            app.TabGroup2 = uitabgroup(app.WellCountsTab);
-            app.TabGroup2.Position = [35 34 393 348];
-
-            % Create AllWellsTab
-            app.AllWellsTab = uitab(app.TabGroup2);
-            app.AllWellsTab.Title = 'All Wells';
-
-            % Create UITable2
-            app.UITable2 = uitable(app.AllWellsTab);
-            app.UITable2.ColumnName = {'Column 1'; 'Column 2'; 'Column 3'; 'Column 4'};
-            app.UITable2.RowName = {};
-            app.UITable2.Position = [1 1 391 322];
-
-            % Create Group1Tab
-            app.Group1Tab = uitab(app.TabGroup2);
-            app.Group1Tab.Title = 'Group 1';
-
-            % Create UITable3
-            app.UITable3 = uitable(app.Group1Tab);
-            app.UITable3.ColumnName = {'Column 1'; 'Column 2'; 'Column 3'; 'Column 4'};
-            app.UITable3.RowName = {};
-            app.UITable3.Position = [48 88 302 185];
-
-            % Create Tab
-            app.Tab = uitab(app.TabGroup2);
-            app.Tab.Title = 'Tab';
-
-            % Create Tab2
-            app.Tab2 = uitab(app.TabGroup2);
-            app.Tab2.Title = 'Tab2';
-
-            % Create StatusTextAreaLabel
-            app.StatusTextAreaLabel = uilabel(app.RightPanel);
-            app.StatusTextAreaLabel.HorizontalAlignment = 'right';
-            app.StatusTextAreaLabel.Position = [73 126 39 22];
-            app.StatusTextAreaLabel.Text = 'Status';
-
-            % Create StatusTextArea
-            app.StatusTextArea = uitextarea(app.RightPanel);
-            app.StatusTextArea.Position = [73 14 318 115];
+            % Create StatusWindowTextArea
+            app.StatusWindowTextArea = uitextarea(app.RightPanel);
+            app.StatusWindowTextArea.Position = [7 14 416 115];
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
