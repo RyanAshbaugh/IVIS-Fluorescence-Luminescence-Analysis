@@ -17,23 +17,23 @@ For example, if you would like to analyze the sequence of three images named 'Ex
 ```
 Example_Images_SEQ
 |--- Example_Images_001
-|	 |--- AnalyzedClickInfo.txt
-|	 |--- ClickInfo.txt
-|	 |--- luminescent.TIF
-|	 |--- photogragh.TIF
-|	 |--- readbiasonly.TIF
+|    |--- AnalyzedClickInfo.txt
+|    |--- ClickInfo.txt
+|    |--- luminescent.TIF
+|    |--- photogragh.TIF
+|    |--- readbiasonly.TIF
 |--- Example_Images_001
-|	 |--- AnalyzedClickInfo.txt
-|	 |--- ClickInfo.txt
-|	 |--- luminescent.TIF
-|	 |--- photogragh.TIF
-|	 |--- readbiasonly.TIF
+|    |--- AnalyzedClickInfo.txt
+|    |--- ClickInfo.txt
+|    |--- luminescent.TIF
+|    |--- photogragh.TIF
+|    |--- readbiasonly.TIF
 |--- Example_Images_001
-|	 |--- AnalyzedClickInfo.txt
-|	 |--- ClickInfo.txt
-|	 |--- luminescent.TIF
-|	 |--- photogragh.TIF
-|	 |--- readbiasonly.TIF
+|    |--- AnalyzedClickInfo.txt
+|    |--- ClickInfo.txt
+|    |--- luminescent.TIF
+|    |--- photogragh.TIF
+|    |--- readbiasonly.TIF
 |--- Example_Images_SEQ.PNG
 |--- SequenceInfo.txt
 ```
@@ -58,9 +58,9 @@ To manually place the ROIs on the image, click the 'Manual' button and then clic
 
 In order to analyze the ROI measurements over time, we first need to assign to groups the ROIs which we are interested in. To do this, begin by clicking the 'Add group' button which allows you to type the name of a new group of wells. This can be helpful to group together wells with the same experimental conditions. An example of two groups and the assignment of wells to those groups is shown below
 
-___________________________________
-| Group 1		| 1:6, 8, 10,12:20|
-___________________________________
-| Group 2		| 25:36			  |
-___________________________________
+- Group 1, 1:6, 8, 10,12:20; Group 2, 25:3; etc.
+
+Once ROI groups are assigned the sequence can by analyzed by clicking the 'Analyze wells' button. This will calculate and plot the total number of photons detected in each ROI over all of the images in the sequence. The graph will be displayed on the right side of the window in the 'Counts vs Time' tab, and by default shows a line for each well colored by group. The behavior can be changed to plot the average of each group by selecting the radio button option 'Average of each group' in the bottom left under the 'Well counts vs time plot' section.
+
+To save the well count data, click the 'Save Well Count Data' button and a dialog box will open allowing you to save a .csv file with the calculated well counts. An additional .csv file containing the well counts normalized to the counts in the first reading will be saved alongside the original well counts.
 
