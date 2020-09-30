@@ -1,5 +1,5 @@
 function msg = plotCountsOverTime( image_axes, normalized_counts, groups, ...
-		mean_flag )
+		stim_indices, mean_flag )
 	
 	if isempty( normalized_counts )
 		msg = 'No well count data to plot';
@@ -33,11 +33,26 @@ function msg = plotCountsOverTime( image_axes, normalized_counts, groups, ...
 				end
 			end
 		end
-		legend( image_axes, legend_names );
+		lgd = legend( image_axes, legend_names, 'Location', 'northeastoutside' );
 		title( image_axes, title_str );
 		xlabel( image_axes, 'Measurement number' );
 		ylabel( image_axes, 'Relative Luminescence Units' );
 
+		y_lims = ylim;
+		xlim( image_axes, [ 0 num_readings ] );
+		disp('stim_indices')
+		stim_indices
+		xline( image_axes, stim_indices( 1 ), 'r', 'LineWidth', 1.5, ...
+		   'DisplayName', 'Stim on'	);
+		xline( image_axes, stim_indices( 2 ), 'b', 'LineWidth', 1.5, ...
+		   'DisplayName', 'Stim off' );
+
+		set( image_axes, 'Color', [ 0.1, 0.1, 0.1 ] ); 
+		set( lgd, 'Color', [ 0.05, 0.05, 0.05 ], 'TextColor', 'w' ); 
+		grid( image_axes, 'on' );
+		grid( image_axes, 'minor' );
+		image_axes.GridColor = 'w';
+		image_axes.MinorGridColor = 'w';
 		hold( image_axes, 'off' );
 		msg = 'Plotted normalized well counts for each group';
 	end
